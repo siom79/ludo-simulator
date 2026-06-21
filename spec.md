@@ -3,8 +3,8 @@
 ## Goal
 
 A command-line simulator for the board game Ludo ("Mensch ärgere Dich nicht")
-that plays a large number of games between configurable AI strategies and
-reports win rates and game-length statistics. The simulator is meant to help
+that plays a large number of games between configurable move-selection
+strategies and reports win rates and game-length statistics. The simulator is meant to help
 compare how different movement strategies and rule variants affect a
 player's chances of winning.
 

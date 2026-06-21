@@ -2,7 +2,7 @@
 
 A command-line simulator for the board game Ludo ("Mensch ärgere Dich
 nicht"). It plays a large number of automated games between configurable
-AI strategies and reports win rates and game-length statistics, so you can
+move-selection strategies and reports win rates and game-length statistics, so you can
 compare how different movement strategies and rule variants affect a
 player's chances of winning.
 
