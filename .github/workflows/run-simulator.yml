@@ -53,10 +53,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Set up JDK 21
-        uses: actions/setup-java@v4
+        uses: actions/setup-java@v5
         with:
           distribution: temurin
           java-version: "21"
@@ -96,10 +96,13 @@ jobs:
           fi
 
           echo "Command: java -jar $JAR ${ARGS[*]}"
+          OUTPUT=$(java -jar "$JAR" "${ARGS[@]}")
+          echo "$OUTPUT"
+
           {
             echo "### Ludo Simulator Result"
             echo
             echo '```'
-            java -jar "$JAR" "${ARGS[@]}"
+            echo "$OUTPUT"
             echo '```'
           } >> "$GITHUB_STEP_SUMMARY"
