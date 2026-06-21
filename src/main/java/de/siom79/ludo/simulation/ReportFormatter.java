@@ -13,10 +13,10 @@ public final class ReportFormatter {
     public static String format(SimulationReport report) {
         int totalRuns = report.config().runs();
         StringBuilder sb = new StringBuilder();
-        sb.append(String.format(Locale.ROOT, "Ludo Simulator - Ergebnis (%d Spiele)%n", totalRuns));
+        sb.append(String.format(Locale.ROOT, "Ludo Simulator - Result (%d games)%n", totalRuns));
         sb.append("RuleSet: ").append(formatRuleSet(report.config().ruleSet())).append(System.lineSeparator());
         sb.append(System.lineSeparator());
-        sb.append(String.format(Locale.ROOT, "%-12s %-22s %-8s %s%n", "Spieler", "Strategie", "Siege", "Siegquote"));
+        sb.append(String.format(Locale.ROOT, "%-12s %-22s %-8s %s%n", "Player", "Strategy", "Wins", "WinRate"));
         for (PlayerStats stats : report.playerStats()) {
             sb.append(String.format(Locale.ROOT, "%-12s %-22s %-8d %6.2f%%%n",
                     stats.name(), stats.strategy().displayName(), stats.wins(), stats.winRate(totalRuns) * 100));
@@ -26,8 +26,8 @@ public final class ReportFormatter {
             if (stats.wins() == 0) {
                 continue;
             }
-            sb.append(formatSampleLine(stats.name(), "Runden", stats.roundsToWin()));
-            sb.append(formatSampleLine(stats.name(), "Wuerfe", stats.turnsToWin()));
+            sb.append(formatSampleLine(stats.name(), "Rounds", stats.roundsToWin()));
+            sb.append(formatSampleLine(stats.name(), "Rolls", stats.turnsToWin()));
         }
         return sb.toString();
     }
@@ -47,7 +47,7 @@ public final class ReportFormatter {
         double median = median(sorted);
         int min = sorted.get(0);
         int max = sorted.get(n - 1);
-        return String.format(Locale.ROOT, "%s - %s bis Sieg (n=%d): avg=%.1f median=%.1f min=%d max=%d%n",
+        return String.format(Locale.ROOT, "%s - %s to win (n=%d): avg=%.1f median=%.1f min=%d max=%d%n",
                 name, label, n, avg, median, min, max);
     }
 

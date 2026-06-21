@@ -20,7 +20,7 @@ public final class Simulator {
         int playerCount = specs.size();
         List<PlayerStats.Builder> statsBuilders = new ArrayList<>(playerCount);
         for (int i = 0; i < playerCount; i++) {
-            String name = i == 0 ? "Selbst" : "Gegner " + i;
+            String name = i == 0 ? "Self" : "Opponent " + i;
             statsBuilders.add(new PlayerStats.Builder(i, name, specs.get(i)));
         }
 

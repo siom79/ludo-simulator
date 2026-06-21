@@ -134,6 +134,9 @@ Invalid arguments (unknown flags, out-of-range values, malformed
 strategy/rule/number syntax) print a usage message to stderr and exit with
 a non-zero status.
 
+All program output (CLI help, error messages, simulation report) is in
+English.
+
 ## Out of Scope (for this iteration)
 
 - Interactive/human-controlled play.

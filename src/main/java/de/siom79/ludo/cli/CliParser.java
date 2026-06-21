@@ -13,14 +13,14 @@ import java.util.stream.Stream;
 public final class CliParser {
 
     public static final String USAGE = """
-            java -jar ludo-simulator.jar [OPTIONEN]
+            java -jar ludo-simulator.jar [OPTIONS]
 
-            --opponents <1-3>                  Anzahl Gegner. Default: 3.
+            --opponents <1-3>                  Number of opponents. Default: 3.
             --strategy-self <NAME[:FALLBACK]>  Default: RANDOM.
             --strategy-opponents <NAME[:FALLBACK][,NAME[:FALLBACK]...]>
-                                                Ein Eintrag (fuer alle Gegner) ODER genau so viele
-                                                kommagetrennte Eintraege wie --opponents. Default: RANDOM.
-                                                Gueltige Namen: RANDOM, FURTHEST_FIRST, NEAREST_FIRST,
+                                                One entry (applied to all opponents) OR exactly as
+                                                many comma-separated entries as --opponents. Default: RANDOM.
+                                                Valid names: RANDOM, FURTHEST_FIRST, NEAREST_FIRST,
                                                 CAPTURE_PRIORITY, DEFENSIVE, EXIT_PRIORITY
 
             --rule-exit-only-on-six <bool>      Default: true
@@ -29,9 +29,9 @@ public final class CliParser {
             --rule-three-sixes-forfeit <bool>   Default: true
             --rule-no-skipping-in-goal <bool>   Default: true
 
-            --runs <N>                         Anzahl simulierter Spiele. Default: 1000.
-            --seed <long>                      Optionaler Basis-Seed fuer Reproduzierbarkeit.
-            --help, -h                         Hilfe anzeigen.
+            --runs <N>                         Number of simulated games. Default: 1000.
+            --seed <long>                      Optional base seed for reproducibility.
+            --help, -h                         Show this help.
             """;
 
     public CliArguments parse(String[] args) {
@@ -39,18 +39,18 @@ public final class CliParser {
         for (int i = 0; i < args.length; i++) {
             String arg = args[i];
             if (!arg.startsWith("--")) {
-                throw error("Unbekanntes Argument: " + arg);
+                throw error("Unknown argument: " + arg);
             }
             String key = arg.substring(2);
             if (i + 1 >= args.length) {
-                throw error("Fehlender Wert fuer --" + key);
+                throw error("Missing value for --" + key);
             }
             options.put(key, args[++i]);
         }
 
         int opponents = parseIntOption(options, "opponents", 3);
         if (opponents < 1 || opponents > 3) {
-            throw error("--opponents muss zwischen 1 und 3 liegen: " + opponents);
+            throw error("--opponents must be between 1 and 3: " + opponents);
         }
 
         StrategySpec selfStrategy = parseStrategyOption(options.get("strategy-self"),
@@ -68,7 +68,7 @@ public final class CliParser {
 
         int runs = parseIntOption(options, "runs", 1000);
         if (runs < 1) {
-            throw error("--runs muss >= 1 sein: " + runs);
+            throw error("--runs must be >= 1: " + runs);
         }
 
         Long seed = options.containsKey("seed") ? parseLong(options.get("seed"), "seed") : null;
@@ -91,8 +91,8 @@ public final class CliParser {
             return Stream.generate(() -> parsed.get(0)).limit(opponents).toList();
         }
         if (parsed.size() != opponents) {
-            throw error("--strategy-opponents muss 1 oder " + opponents
-                    + " kommagetrennte Eintraege haben, war: " + parsed.size());
+            throw error("--strategy-opponents must have 1 or " + opponents
+                    + " comma-separated entries, was: " + parsed.size());
         }
         return parsed;
     }
@@ -115,7 +115,7 @@ public final class CliParser {
         try {
             return Integer.parseInt(options.get(key));
         } catch (NumberFormatException e) {
-            throw error("Ungueltiger Zahlenwert fuer --" + key + ": " + options.get(key));
+            throw error("Invalid numeric value for --" + key + ": " + options.get(key));
         }
     }
 
@@ -123,7 +123,7 @@ public final class CliParser {
         try {
             return Long.parseLong(value);
         } catch (NumberFormatException e) {
-            throw error("Ungueltiger Zahlenwert fuer --" + key + ": " + value);
+            throw error("Invalid numeric value for --" + key + ": " + value);
         }
     }
 
@@ -138,7 +138,7 @@ public final class CliParser {
         if (value.equalsIgnoreCase("false")) {
             return false;
         }
-        throw error("--" + key + " akzeptiert nur 'true' oder 'false': " + value);
+        throw error("--" + key + " only accepts 'true' or 'false': " + value);
     }
 
     private CliParseException error(String message) {
