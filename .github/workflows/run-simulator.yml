@@ -1,0 +1,105 @@
+name: Run Ludo Simulator
+
+on:
+  workflow_dispatch:
+    inputs:
+      opponents:
+        description: "Number of opponents (1-3)"
+        type: choice
+        options:
+          - "1"
+          - "2"
+          - "3"
+        default: "3"
+      strategy_self:
+        description: "Strategy for the self player. Format: NAME[:FALLBACK]. Valid names: RANDOM, FURTHEST_FIRST, NEAREST_FIRST, CAPTURE_PRIORITY, DEFENSIVE, EXIT_PRIORITY"
+        type: string
+        default: "RANDOM"
+      strategy_opponents:
+        description: "Opponent strategy/strategies. One entry (used for all opponents) or exactly as many comma-separated entries as 'opponents'. Format per entry: NAME[:FALLBACK]"
+        type: string
+        default: "RANDOM"
+      rule_exit_only_on_six:
+        description: "A token may only leave home on a roll of 6"
+        type: boolean
+        default: true
+      rule_mandatory_capture:
+        description: "Capturing moves are mandatory when available"
+        type: boolean
+        default: false
+      rule_extra_turn_on_six:
+        description: "Rolling a 6 grants an extra turn"
+        type: boolean
+        default: true
+      rule_three_sixes_forfeit:
+        description: "Three consecutive 6s forfeit the turn"
+        type: boolean
+        default: true
+      rule_no_skipping_in_goal:
+        description: "Tokens cannot skip over the player's own tokens in the goal lane"
+        type: boolean
+        default: true
+      runs:
+        description: "Number of simulated games"
+        type: string
+        default: "1000"
+      seed:
+        description: "Optional base seed for reproducibility (leave empty for a random seed)"
+        type: string
+        default: ""
+
+jobs:
+  simulate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "21"
+          cache: maven
+
+      - name: Build
+        run: mvn -B package
+
+      - name: Run simulator
+        env:
+          OPPONENTS: ${{ inputs.opponents }}
+          STRATEGY_SELF: ${{ inputs.strategy_self }}
+          STRATEGY_OPPONENTS: ${{ inputs.strategy_opponents }}
+          RULE_EXIT_ONLY_ON_SIX: ${{ inputs.rule_exit_only_on_six }}
+          RULE_MANDATORY_CAPTURE: ${{ inputs.rule_mandatory_capture }}
+          RULE_EXTRA_TURN_ON_SIX: ${{ inputs.rule_extra_turn_on_six }}
+          RULE_THREE_SIXES_FORFEIT: ${{ inputs.rule_three_sixes_forfeit }}
+          RULE_NO_SKIPPING_IN_GOAL: ${{ inputs.rule_no_skipping_in_goal }}
+          RUNS: ${{ inputs.runs }}
+          SEED: ${{ inputs.seed }}
+        run: |
+          JAR=$(ls target/ludo-simulator-*.jar | head -n1)
+
+          ARGS=(
+            --opponents "$OPPONENTS"
+            --strategy-self "$STRATEGY_SELF"
+            --strategy-opponents "$STRATEGY_OPPONENTS"
+            --rule-exit-only-on-six "$RULE_EXIT_ONLY_ON_SIX"
+            --rule-mandatory-capture "$RULE_MANDATORY_CAPTURE"
+            --rule-extra-turn-on-six "$RULE_EXTRA_TURN_ON_SIX"
+            --rule-three-sixes-forfeit "$RULE_THREE_SIXES_FORFEIT"
+            --rule-no-skipping-in-goal "$RULE_NO_SKIPPING_IN_GOAL"
+            --runs "$RUNS"
+          )
+          if [ -n "$SEED" ]; then
+            ARGS+=(--seed "$SEED")
+          fi
+
+          echo "Command: java -jar $JAR ${ARGS[*]}"
+          {
+            echo "### Ludo Simulator Result"
+            echo
+            echo '```'
+            java -jar "$JAR" "${ARGS[@]}"
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
